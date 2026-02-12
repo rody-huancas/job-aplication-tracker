@@ -4,23 +4,68 @@ import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useState } from "react";
+import { signIn } from "@/lib/auth/auth-client";
+import { useRouter } from "next/navigation";
 
 const SignInPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const result = await signIn.email({ email, password });
+
+      if (result.error) {
+        setError(result.error.message ?? "Falló al iniciar sesión");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      setError("Ocurrió un error inesperado");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex min-h-[calc(100dvh - 4rem)] items-center justify-center bg-white p-4 ">
+    <div className="min-h-[calc(100dvh-5rem)] flex bg-white items-center justify-center p-4 ">
       <Card className="w-full max-w-md border border-gray-200 shadow-lg">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-black">
-            Registro
+            Iniciar Sesión
           </CardTitle>
           <CardDescription className="text-gray-600">
-            Crea una cuenta para iniciar en la aplicación
+            Inicia sesión en tu cuenta existente
           </CardDescription>
         </CardHeader>
 
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <CardContent className="space-y-4">
+            {error && (
+              <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-700">
                 Email
@@ -29,6 +74,8 @@ const SignInPage = () => {
                 id="email"
                 type="email"
                 placeholder="jhon@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="border-gray-300 focus:border-primary focus:ring-primary"
               />
@@ -41,6 +88,8 @@ const SignInPage = () => {
                 id="password"
                 type="password"
                 placeholder="*****************"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
                 className="border-gray-300 focus:border-primary focus:ring-primary"
@@ -52,8 +101,9 @@ const SignInPage = () => {
             <Button
               type="submit"
               className="w-full bg-primary hover:bg-primary/90"
+              disabled={loading}
             >
-              Registrarse
+              {loading ? "Iniciando Sesión" : "Iniciar Sesión"}
             </Button>
             <p>
               ¿Aún no tienes una cuenta?{" "}
