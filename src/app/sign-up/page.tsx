@@ -48,7 +48,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="flex min-h-[calc(100dvh - 4rem)] items-center justify-center bg-white p-4 ">
+    <div className="min-h-[calc(100dvh-5rem)] flex bg-white items-center justify-center p-4 ">
       <Card className="w-full max-w-md border border-gray-200 shadow-lg">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-black">
